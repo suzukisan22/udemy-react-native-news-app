@@ -1,9 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, FlatList, SafeAreaView } from 'react-native';
 import ListItem from './components/ListItem';
-import articles from './dummies/articles';
+import dummyArticles from './dummies/articles';
+import Constants from 'expo-constants'
+import axios from 'axios'
+
+const URL = `https://newsapi.org/v2/top-headlines?country=jp&category=business&apiKey=${Constants.manifest.extra.newsApiKey}`
 
 export default function App() {
+  const [articles, setArticles] = useState([])
+  useEffect(() => {
+    fetchArticle()
+  }, []);
+
+  const fetchArticle = async () => {
+    try {
+      const response = await axios.get(URL)
+      setArticles(response.data.articles)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList

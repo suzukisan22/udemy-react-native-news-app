@@ -7,36 +7,44 @@ import axios from 'axios'
 
 const URL = `https://newsapi.org/v2/top-headlines?country=jp&category=business&apiKey=${Constants.manifest.extra.newsApiKey}`
 
-export default function App() {
-  const [articles, setArticles] = useState([])
-  useEffect(() => {
-    fetchArticle()
-  }, []);
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      articles: [],
+    };
+  }
 
-  const fetchArticle = async () => {
+  async componentDidMount() {
+    this.fetchArticles(URL)
+  }
+
+  fetchArticles = async (URL) => {
     try {
       const response = await axios.get(URL)
-      setArticles(response.data.articles)
+      this.setState({ articles: response.data.articles })
     } catch (error) {
       console.log(error)
     }
   }
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <FlatList
-        data={articles}
-        renderItem={({ item }) => (
-          <ListItem
-            imageUrl={item.urlToImage}
-            title={item.title}
-            author={item.author}
-          />
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </SafeAreaView>
-  );
+  render() {
+    return (
+      <SafeAreaView style={styles.container}>
+        <FlatList
+          data={this.state.articles}
+          renderItem={({ item }) => (
+            <ListItem
+              imageUrl={item.urlToImage}
+              title={item.title}
+              author={item.author}
+            />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </SafeAreaView>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
